@@ -48,7 +48,7 @@ func (okWs *OKExFutureWs) SubscribeTicker(pair CurrencyPair, contract string) er
 	}
 	return okWs.subscribe(map[string]interface{}{
 		"event":   "addChannel",
-		"channel": fmt.Sprintf("ok_sub_futureusd_%s_ticker_%s", strings.ToLower(pair.CurrencyA.Symbol), contract)})
+		"channel": fmt.Sprintf("ok_sub_futureusd_%s_ticker_%s", strings.ToLower(pair.Base.String()), contract)})
 }
 
 func (okWs *OKExFutureWs) SubscribeDepth(pair CurrencyPair, contract string, size int) error {
@@ -57,7 +57,7 @@ func (okWs *OKExFutureWs) SubscribeDepth(pair CurrencyPair, contract string, siz
 	}
 	return okWs.subscribe(map[string]interface{}{
 		"event":   "addChannel",
-		"channel": fmt.Sprintf("ok_sub_futureusd_%s_depth_%s_%d", strings.ToLower(pair.CurrencyA.Symbol), contract, size)})
+		"channel": fmt.Sprintf("ok_sub_futureusd_%s_depth_%s_%d", strings.ToLower(pair.Base.String()), contract, size)})
 }
 
 func (okWs *OKExFutureWs) SubscribeTrade(pair CurrencyPair, contract string) error {
@@ -66,7 +66,7 @@ func (okWs *OKExFutureWs) SubscribeTrade(pair CurrencyPair, contract string) err
 	}
 	return okWs.subscribe(map[string]interface{}{
 		"event":   "addChannel",
-		"channel": fmt.Sprintf("ok_sub_futureusd_%s_trade_%s", strings.ToLower(pair.CurrencyA.Symbol), contract)})
+		"channel": fmt.Sprintf("ok_sub_futureusd_%s_trade_%s", strings.ToLower(pair.Base.String()), contract)})
 }
 
 func (okWs *OKExFutureWs) subscribe(sub map[string]interface{}) error {

@@ -253,7 +253,7 @@ func (bitstamp *Bitstamp) GetOneOrder(orderId string, currency CurrencyPair) (*O
 			fee         float64
 		)
 
-		currencyStr := strings.ToLower(currency.CurrencyA.Symbol)
+		currencyStr := strings.ToLower(currency.Base.String())
 		for _, v := range transactions {
 			transaction := v.(map[string]interface{})
 			price := ToFloat64(transaction["price"])

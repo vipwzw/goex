@@ -280,7 +280,7 @@ func (fm *FMexSwap) GetFutureUserinfo() (*FutureAccount, error) {
 	balances := r.(map[string]interface{})
 	for k, v := range balances {
 		vv := v.([]interface{})
-		currency := NewCurrency(k, "")
+		currency := NewCurrency(k)
 		acc.FutureSubAccounts[currency] = FutureSubAccount{
 			Currency:      currency,
 			AccountRights: ToFloat64(vv[0]),
@@ -810,12 +810,8 @@ func (fm *FMexSwap) buildSigned(httpmethod string, apiurl string, timestamp int6
 }
 
 func adaptCurrencyPair(pair CurrencyPair) CurrencyPair {
-	if pair.CurrencyA.Eq(BCH) || pair.CurrencyA.Eq(BCC) {
-		return NewCurrencyPair(NewCurrency("BCHABC", ""), pair.CurrencyB).AdaptUsdToUsdt()
-	}
-
-	if pair.CurrencyA.Symbol == "BSV" {
-		return NewCurrencyPair(NewCurrency("BCHSV", ""), pair.CurrencyB).AdaptUsdToUsdt()
+	if pair.Base == BSV {
+		return NewCurrencyPair(NewCurrency("BCHSV"), pair.Quote).AdaptUsdToUsdt()
 	}
 
 	return pair.AdaptUsdtToUsd()

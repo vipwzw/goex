@@ -371,30 +371,24 @@ func (poloniex *Poloniex) GetAccount() (*Account, error) {
 	acc.SubAccounts = make(map[Currency]SubAccount)
 
 	for k, v := range respmap {
-		var currency Currency = NewCurrency(k, "")
+		var currency  = NewCurrency(k)
 		vv := v.(map[string]interface{})
 		subAcc := SubAccount{}
 		subAcc.Currency = currency
 		subAcc.Amount, _ = strconv.ParseFloat(vv["available"].(string), 64)
 		subAcc.ForzenAmount, _ = strconv.ParseFloat(vv["onOrders"].(string), 64)
 		acc.SubAccounts[subAcc.Currency] = subAcc
-		if currency.Symbol == "USDT" {
-			acc.SubAccounts[USD] = subAcc
-		}
 	}
 
 	return acc, nil
 }
 
 func (p *Poloniex) Withdraw(amount string, currency Currency, fees, receiveAddr, safePwd string) (string, error) {
-	if currency == BCC {
-		currency = BCH
-	}
 	params := url.Values{}
 	params.Add("command", "withdraw")
 	params.Add("address", receiveAddr)
 	params.Add("amount", amount)
-	params.Add("currency", strings.ToUpper(currency.String()))
+	params.Add("currency", string(currency))
 
 	sign, err := p.buildPostForm(&params)
 	if err != nil {

@@ -389,9 +389,9 @@ func (bo *Bigone) GetAccount() (*goex.Account, error) {
 		//log.Println(v)
 		var currency goex.Currency
 		if v.AssetID != "" {
-			currency = goex.NewCurrency(v.AssetID, "")
+			currency = goex.NewCurrency(v.AssetID)
 		} else {
-			currency = goex.NewCurrency(v.AssetSymbol, "")
+			currency = goex.NewCurrency(v.AssetSymbol)
 		}
 
 		acc.SubAccounts[currency] = goex.SubAccount{

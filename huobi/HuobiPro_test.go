@@ -75,28 +75,28 @@ func TestHuobiPro_GetAccount(t *testing.T) {
 
 func TestHuobiPro_LimitBuy(t *testing.T) {
 	return
-	ord, err := hbpro.LimitBuy("", "0.09122", goex.BCC_BTC)
+	ord, err := hbpro.LimitBuy("", "0.09122", goex.BCH_BTC)
 	assert.Nil(t, err)
 	t.Log(ord)
 }
 
 func TestHuobiPro_LimitSell(t *testing.T) {
 	return
-	ord, err := hbpro.LimitSell("1", "0.212", goex.BCC_BTC)
+	ord, err := hbpro.LimitSell("1", "0.212", goex.BCH_BTC)
 	assert.Nil(t, err)
 	t.Log(ord)
 }
 
 func TestHuobiPro_MarketSell(t *testing.T) {
 	return
-	ord, err := hbpro.MarketSell("0.1738", "0.212", goex.BCC_BTC)
+	ord, err := hbpro.MarketSell("0.1738", "0.212", goex.BCH_BTC)
 	assert.Nil(t, err)
 	t.Log(ord)
 }
 
 func TestHuobiPro_MarketBuy(t *testing.T) {
 	return
-	ord, err := hbpro.MarketBuy("0.02", "", goex.BCC_BTC)
+	ord, err := hbpro.MarketBuy("0.02", "", goex.BCH_BTC)
 	assert.Nil(t, err)
 	t.Log(ord)
 }

@@ -28,7 +28,7 @@ func (ok *OKExMargin) GetMarginAccount(pair CurrencyPair) (*MarginAccount, error
 
 	for k, v := range response {
 		if strings.Contains(k, "currency") {
-			c := NewCurrency(strings.Split(k, ":")[1], "")
+			c := NewCurrency(strings.Split(k, ":")[1])
 			vv := v.(map[string]interface{})
 			if err != nil {
 				return nil, err
@@ -60,7 +60,7 @@ func (ok *OKExMargin) Borrow(parameter BorrowParameter) (borrowId string, err er
 		Amount       string `json:"amount"`
 	}{
 		InstrumentId: parameter.CurrencyPair.ToSymbol("-"),
-		Currency:     parameter.Currency.Symbol,
+		Currency:     parameter.Currency.String(),
 		Amount:       FloatToString(parameter.Amount, 8)}
 
 	reqBody, _, _ := ok.BuildRequestBody(param)
@@ -94,7 +94,7 @@ func (ok *OKExMargin) Repayment(parameter RepaymentParameter) (repaymentId strin
 	}{
 		parameter.BorrowId,
 		parameter.CurrencyPair.ToSymbol("-"),
-		parameter.Currency.Symbol,
+		parameter.Currency.String(),
 		FloatToString(parameter.Amount, 8)}
 
 	reqBody, _, _ := ok.BuildRequestBody(param)

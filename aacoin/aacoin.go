@@ -77,7 +77,7 @@ func (aa *Aacoin) GetAccount() (*Account, error) {
 
 	for _, v := range balances {
 		vv := v.(map[string]interface{})
-		currency := NewCurrency(vv["currencyCode"].(string), "")
+		currency := NewCurrency(vv["currencyCode"].(string))
 		trade := 0.0
 		frozen := 0.0
 		vvv := vv["accounts"].([]interface{})

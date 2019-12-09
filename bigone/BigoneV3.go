@@ -375,7 +375,7 @@ func (bo *BigoneV3) GetAccount() (*goex.Account, error) {
 
 	for _, v := range resp.Data {
 		//log.Println(v)
-		currency := goex.NewCurrency(v.AssetSymbol, "")
+		currency := goex.NewCurrency(v.AssetSymbol)
 		acc.SubAccounts[currency] = goex.SubAccount{
 			Currency:     currency,
 			Amount:       goex.ToFloat64(v.Balance),

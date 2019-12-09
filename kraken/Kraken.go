@@ -202,7 +202,7 @@ func (k *Kraken) GetAccount() (*Account, error) {
 		//log.Println(symbol, amount)
 		acc.SubAccounts[currency] = SubAccount{Currency: currency, Amount: amount, ForzenAmount: 0, LoanAmount: 0}
 
-		if currency.Symbol == "XBT" { // adapt to btc
+		if currency.String() == "XBT" { // adapt to btc
 			acc.SubAccounts[BTC] = SubAccount{Currency: BTC, Amount: amount, ForzenAmount: 0, LoanAmount: 0}
 		}
 	}
@@ -343,16 +343,16 @@ func (k *Kraken) convertCurrency(currencySymbol string) Currency {
 		currencySymbol = strings.Replace(currencySymbol, "X", "", 1)
 		currencySymbol = strings.Replace(currencySymbol, "Z", "", 1)
 	}
-	return NewCurrency(currencySymbol, "")
+	return NewCurrency(currencySymbol)
 }
 
 func (k *Kraken) convertPair(pair CurrencyPair) CurrencyPair {
-	if "BTC" == pair.CurrencyA.Symbol {
-		return NewCurrencyPair(XBT, pair.CurrencyB)
+	if  pair.Base == BTC {
+		return NewCurrencyPair(XBT, pair.Quote)
 	}
 
-	if "BTC" == pair.CurrencyB.Symbol {
-		return NewCurrencyPair(pair.CurrencyA, XBT)
+	if BTC == pair.Quote {
+		return NewCurrencyPair(pair.Base, XBT)
 	}
 
 	return pair

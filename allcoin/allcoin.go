@@ -85,8 +85,8 @@ func (ac *Allcoin) GetTicker(currency CurrencyPair) (*Ticker, error) {
 	//	defer wg.Done()
 	currency2 := ac.adaptCurrencyPair(currency)
 	params := url.Values{}
-	params.Set("part", strings.ToLower(currency2.CurrencyB.String()))
-	params.Set("coin", strings.ToLower(currency2.CurrencyA.String()))
+	params.Set("part", strings.ToLower(currency2.Quote.String()))
+	params.Set("coin", strings.ToLower(currency2.Base.String()))
 	path := API_BASE_URL + TICKER_URI
 	resp, err := HttpPostForm(ac.httpClient, path, params)
 	//log.Println("resp:", string(resp), "err:", err)
@@ -253,7 +253,7 @@ func (ac *Allcoin) GetAccount() (*Account, error) {
 	for k, v := range data {
 		s := strings.Split(k, "_")
 		if len(s) == 2 {
-			cur := NewCurrency(s[0], "")
+			cur := NewCurrency(s[0])
 			if s[1] == "over" {
 				sub := SubAccount{}
 				sub = acc.SubAccounts[cur]

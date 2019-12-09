@@ -92,7 +92,7 @@ func (hbdmWs *HbdmWs) SubscribeTicker(pair CurrencyPair, contract string) error 
 	}
 	return hbdmWs.subscribe(map[string]interface{}{
 		"id":  "ticker_1",
-		"sub": fmt.Sprintf("market.%s_%s.detail", pair.CurrencyA.Symbol, hbdmWs.adaptContractSymbol(contract))})
+		"sub": fmt.Sprintf("market.%s_%s.detail", pair.Base.String(), hbdmWs.adaptContractSymbol(contract))})
 }
 
 func (hbdmWs *HbdmWs) SubscribeDepth(pair CurrencyPair, contract string, size int) error {
@@ -101,7 +101,7 @@ func (hbdmWs *HbdmWs) SubscribeDepth(pair CurrencyPair, contract string, size in
 	}
 	return hbdmWs.subscribe(map[string]interface{}{
 		"id":  "depth_2",
-		"sub": fmt.Sprintf("market.%s_%s.depth.step0", pair.CurrencyA.Symbol, hbdmWs.adaptContractSymbol(contract))})
+		"sub": fmt.Sprintf("market.%s_%s.depth.step0", pair.Base.String(), hbdmWs.adaptContractSymbol(contract))})
 }
 
 func (hbdmWs *HbdmWs) SubscribeTrade(pair CurrencyPair, contract string) error {
@@ -110,7 +110,7 @@ func (hbdmWs *HbdmWs) SubscribeTrade(pair CurrencyPair, contract string) error {
 	}
 	return hbdmWs.subscribe(map[string]interface{}{
 		"id":  "trade_3",
-		"sub": fmt.Sprintf("market.%s_%s.trade.detail", pair.CurrencyA.Symbol, hbdmWs.adaptContractSymbol(contract))})
+		"sub": fmt.Sprintf("market.%s_%s.trade.detail", pair.Base.String(), hbdmWs.adaptContractSymbol(contract))})
 }
 
 func (hbdmWs *HbdmWs) subscribe(sub map[string]interface{}) error {
@@ -237,7 +237,7 @@ func (hbdmWs *HbdmWs) parseCurrencyAndContract(ch string) (CurrencyPair, string,
 	case "CW":
 		contract = THIS_WEEK_CONTRACT
 	}
-	return NewCurrencyPair(NewCurrency(cs[0], ""), USD), contract, nil
+	return NewCurrencyPair(NewCurrency(cs[0]), USD), contract, nil
 }
 
 func (hbdmWs *HbdmWs) parseTrade(r TradeResponse) []Trade {

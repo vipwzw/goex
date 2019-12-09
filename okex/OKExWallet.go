@@ -64,7 +64,7 @@ func (ok *OKExWallet) GetAccount() (*Account, error) {
 	acc.SubAccounts = make(map[Currency]SubAccount, 2)
 	acc.Exchange = OKEX
 	for _, itm := range response {
-		currency := NewCurrency(itm.Currency, "")
+		currency := NewCurrency(itm.Currency)
 		acc.SubAccounts[currency] = SubAccount{
 			Currency:     currency,
 			Amount:       itm.Balance,
@@ -138,7 +138,7 @@ type DepositAddress struct {
 }
 
 func (ok *OKExWallet) GetDepositAddress(currency Currency) ([]DepositAddress, error) {
-	urlPath := fmt.Sprintf("/api/account/v3/deposit/address?currency=%s", currency.Symbol)
+	urlPath := fmt.Sprintf("/api/account/v3/deposit/address?currency=%s", currency.String())
 	var response []DepositAddress
 	err := ok.DoRequest("GET", urlPath, "", &response)
 	if err != nil {
@@ -156,7 +156,7 @@ type WithdrawFee struct {
 func (ok *OKExWallet) GetWithDrawalFee(currency *Currency) ([]WithdrawFee, error) {
 	urlPath := "/api/account/v3/withdrawal/fee"
 	if currency != nil && *currency != UNKNOWN {
-		urlPath += "?currency=" + currency.Symbol
+		urlPath += "?currency=" + currency.String()
 	}
 	var response []WithdrawFee
 	err := ok.DoRequest("GET", urlPath, "", &response)
@@ -182,7 +182,7 @@ type DepositWithDrawHistory struct {
 func (ok *OKExWallet) GetWithDrawalHistory(currency *Currency) ([]DepositWithDrawHistory, error) {
 	urlPath := "/api/account/v3/withdrawal/history"
 	if currency != nil && *currency != UNKNOWN {
-		urlPath += "/" + currency.Symbol
+		urlPath += "/" + currency.String()
 	}
 	var response []DepositWithDrawHistory
 	err := ok.DoRequest("GET", urlPath, "", &response)
@@ -192,7 +192,7 @@ func (ok *OKExWallet) GetWithDrawalHistory(currency *Currency) ([]DepositWithDra
 func (ok *OKExWallet) GetDepositHistory(currency *Currency) ([]DepositWithDrawHistory, error) {
 	urlPath := "/api/account/v3/deposit/history"
 	if currency != nil && *currency != UNKNOWN {
-		urlPath += "/" + currency.Symbol
+		urlPath += "/" + currency.String()
 	}
 	var response []DepositWithDrawHistory
 	err := ok.DoRequest("GET", urlPath, "", &response)

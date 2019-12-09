@@ -320,7 +320,7 @@ func (bfx *Bitfinex) currencyPairToSymbol(currencyPair CurrencyPair) string {
 func (bfx *Bitfinex) symbolToCurrencyPair(symbol string) CurrencyPair {
 	currencyA := strings.ToUpper(symbol[0:3])
 	currencyB := strings.ToUpper(symbol[3:])
-	return NewCurrencyPair(NewCurrency(currencyA, ""), NewCurrency(currencyB, ""))
+	return NewCurrencyPair(NewCurrency(currencyA), NewCurrency(currencyB))
 }
 
 func (bfx *Bitfinex) adaptTimestamp(timestamp string) int {
@@ -333,26 +333,26 @@ func (bfx *Bitfinex) adaptCurrencyPair(pair CurrencyPair) CurrencyPair {
 	var currencyA Currency
 	var currencyB Currency
 
-	DASH := NewCurrency("DASH", "")
-	DSH := NewCurrency("DSH", "")
-	QTM := NewCurrency("QTM", "")
-	IOTA := NewCurrency("IOTA", "")
-	IOT := NewCurrency("IOT", "")
+	DASH := NewCurrency("DASH")
+	DSH := NewCurrency("DSH")
+	QTM := NewCurrency("QTM")
+	IOTA := NewCurrency("IOTA")
+	IOT := NewCurrency("IOT")
 
-	if pair.CurrencyA == DASH {
+	if pair.Base == DASH {
 		currencyA = DSH
-	} else if pair.CurrencyA == QTUM {
+	} else if pair.Base == QTUM {
 		currencyA = QTM
-	} else if pair.CurrencyA == IOTA {
+	} else if pair.Base == IOTA {
 		currencyA = IOT
 	} else {
-		currencyA = pair.CurrencyA
+		currencyA = pair.Base
 	}
 
-	if pair.CurrencyB == USDT {
+	if pair.Quote == USDT {
 		currencyB = USD
 	} else {
-		currencyB = pair.CurrencyB
+		currencyB = pair.Quote
 	}
 
 	return NewCurrencyPair(currencyA, currencyB)

@@ -162,7 +162,7 @@ func TestOKExWallet_GetAccount(t *testing.T) {
 
 func TestOKExWallet_Transfer(t *testing.T) {
 	t.Log(okex.OKExWallet.Transfer(TransferParameter{
-		Currency:     goex.EOS.Symbol,
+		Currency:     string(goex.EOS),
 		From:         SPOT,
 		To:           SPOT_MARGIN,
 		Amount:       20,
@@ -171,7 +171,7 @@ func TestOKExWallet_Transfer(t *testing.T) {
 
 func TestOKExWallet_Withdrawal(t *testing.T) {
 	t.Log(okex.OKExWallet.Withdrawal(WithdrawParameter{
-		Currency:    goex.EOS.Symbol,
+		Currency:    goex.EOS.String(),
 		Amount:      100,
 		Destination: 2,
 		ToAddress:   "",

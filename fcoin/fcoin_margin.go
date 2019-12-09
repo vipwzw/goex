@@ -76,7 +76,7 @@ func (fm *FCoinMargin) GetAccount() (*Account, error) {
 			continue
 		}
 
-		currency := NewCurrency(vv["base"].(string), "")
+		currency := NewCurrency(vv["base"].(string))
 
 		acc.SubAccounts[currency] = SubAccount{
 			Currency:     currency,
@@ -84,7 +84,7 @@ func (fm *FCoinMargin) GetAccount() (*Account, error) {
 			ForzenAmount: ToFloat64(vv["frozen_base_currency_amount"]),
 		}
 
-		quoteCurrency := NewCurrency(vv["quote"].(string), "")
+		quoteCurrency := NewCurrency(vv["quote"].(string))
 		amount := ToFloat64(vv["available_quote_currency_amount"])
 		forzenAmount := ToFloat64(vv["frozen_quote_currency_amount"])
 		if amount > quoteAmount {
@@ -130,7 +130,7 @@ func (fm *FCoinMargin) GetMarginAccount(currency CurrencyPair) (*MarginAccount, 
 	acc.RiskRate = ToFloat64(response["risk_rate"])
 	//acc.MarginRatio = ToFloat64(response["margin_ratio"])
 
-	c := NewCurrency(response["base"].(string), "")
+	c := NewCurrency(response["base"].(string))
 	acc.Sub[c] = MarginSubAccount{
 		//Balance:     ToFloat64(response["balance"]),
 		Frozen:      ToFloat64(response["frozen_base_currency_amount"]),
@@ -140,7 +140,7 @@ func (fm *FCoinMargin) GetMarginAccount(currency CurrencyPair) (*MarginAccount, 
 		//LendingFee:  ToFloat64(response["lending_fee"]),
 	}
 
-	c = NewCurrency(response["quote"].(string), "")
+	c = NewCurrency(response["quote"].(string))
 	acc.Sub[c] = MarginSubAccount{
 		//Balance:     ToFloat64(response["balance"]),
 		Frozen:      ToFloat64(response["frozen_quote_currency_amount"]),
@@ -167,7 +167,7 @@ func (fm *FCoinMargin) Borrow(parameter BorrowParameter) (*MarginOrder, error) {
 	//fmt.Println(r, err)
 	response := r.(map[string]interface{})
 	return &MarginOrder{
-		Currency:             NewCurrency(response["currency"].(string), ""),
+		Currency:             NewCurrency(response["currency"].(string)),
 		Amount:               ToFloat64(response["amount"]),
 		BorrowTime:           ToInt64(response["created_at"]),
 		RepaymentTime:        ToInt64(response["finished_at"]),
@@ -250,7 +250,7 @@ func (fm *FCoinMargin) GetUnfinishLoans(currency CurrencyPair) ([]*MarginOrder, 
 	for _, c := range ctt {
 		content := c.(map[string]interface{})
 		order := &MarginOrder{
-			Currency:             NewCurrency(content["currency"].(string), ""),
+			Currency:             NewCurrency(content["currency"].(string)),
 			Amount:               ToFloat64(content["amount"]),
 			BorrowTime:           ToInt64(content["created_at"]),
 			RepaymentTime:        ToInt64(content["finished_at"]),
@@ -328,7 +328,7 @@ func (fm *FCoinMargin) GetOneLoan(borrowId string) (*MarginOrder, error) {
 		return nil, err
 	}
 	return &MarginOrder{
-		Currency:             NewCurrency(response["currency"].(string), ""),
+		Currency:             NewCurrency(response["currency"].(string)),
 		Amount:               ToFloat64(response["amount"]),
 		BorrowTime:           ToInt64(response["created_at"]),
 		RepaymentTime:        ToInt64(response["finished_at"]),

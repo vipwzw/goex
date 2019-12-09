@@ -67,7 +67,7 @@ func (bfx *Bitfinex) GetLendTickers() ([]LendTicker, error) {
 					Last: ToFloat64(vv[10]) * 100,
 					Vol:  ToFloat64(vv[11])},
 				DailyChangePerc: ToFloat64(vv[9]) * 100,
-				Coin:            NewCurrency(symbol[1:], "")})
+				Coin:            NewCurrency(symbol[1:])})
 		}
 	}
 
@@ -83,7 +83,7 @@ func (bfx *Bitfinex) GetDepositWalletBalance() (*Account, error) {
 }
 
 func (bfx *Bitfinex) GetLendBook(currency Currency) (error, *LendBook) {
-	path := fmt.Sprintf("/lendbook/%s", currency.Symbol)
+	path := fmt.Sprintf("/lendbook/%s", currency.String())
 	resp, err := bfx.httpClient.Get(BASE_URL + path)
 	if err != nil {
 		return err, nil
@@ -108,7 +108,7 @@ func (bfx *Bitfinex) Transfer(amount float64, currency Currency, fromWallet, toW
 	path := "transfer"
 	params := map[string]interface{}{
 		"amount":     strconv.FormatFloat(amount, 'f', -1, 32),
-		"currency":   strings.ToUpper(currency.Symbol),
+		"currency":   strings.ToUpper(currency.String()),
 		"walletfrom": fromWallet,
 		"walletto":   toWallet,
 	}
@@ -131,7 +131,7 @@ func (bfx *Bitfinex) newOffer(currency Currency, amount, rate string, period int
 	path := "offer/new"
 	params := map[string]interface{}{
 		"amount":    amount,
-		"currency":  currency.Symbol,
+		"currency":  currency.String(),
 		"rate":      rate,
 		"period":    period,
 		"direction": direction,
@@ -214,7 +214,7 @@ type TradeFunding struct {
 
 func (bfx *Bitfinex) MytradesFunding(currency Currency, limit int) (error, []TradeFunding) {
 	var trades []TradeFunding
-	err := bfx.doAuthenticatedRequest("POST", "mytrades_funding", map[string]interface{}{"limit_trades": limit, "symbol": currency.Symbol}, &trades)
+	err := bfx.doAuthenticatedRequest("POST", "mytrades_funding", map[string]interface{}{"limit_trades": limit, "symbol": currency.String()}, &trades)
 	if err != nil {
 		return err, nil
 	}

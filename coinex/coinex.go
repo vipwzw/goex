@@ -229,7 +229,7 @@ func (coinex *CoinEx) GetAccount() (*Account, error) {
 	acc.Exchange = coinex.GetExchangeName()
 	for c, v := range datamap {
 		vv := v.(map[string]interface{})
-		currency := NewCurrency(c, "")
+		currency := NewCurrency(c)
 		acc.SubAccounts[currency] = SubAccount{
 			Currency:     currency,
 			Amount:       ToFloat64(vv["available"]),

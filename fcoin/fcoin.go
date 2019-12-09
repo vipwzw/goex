@@ -606,7 +606,7 @@ func (fc *FCoin) GetAccount() (*Account, error) {
 	balances := r.([]interface{})
 	for _, v := range balances {
 		vv := v.(map[string]interface{})
-		currency := NewCurrency(vv["currency"].(string), "")
+		currency := NewCurrency(vv["currency"].(string))
 		acc.SubAccounts[currency] = SubAccount{
 			Currency:     currency,
 			Amount:       ToFloat64(vv["available"]),
@@ -625,7 +625,7 @@ func (fc *FCoin) GetAssets() ([]Asset, error) {
 	balances := r.([]interface{})
 	for _, v := range balances {
 		vv := v.(map[string]interface{})
-		currency := NewCurrency(vv["currency"].(string), "")
+		currency := NewCurrency(vv["currency"].(string))
 		assets = append(assets, Asset{
 			Currency:  currency,
 			Avaliable: ToFloat64(vv["available"]),

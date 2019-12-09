@@ -30,7 +30,7 @@ func New(client *http.Client, accesskey, secretkey string) *Bithumb {
 
 func (bit *Bithumb) placeOrder(side, amount, price string, pair CurrencyPair) (*Order, error) {
 	var retmap map[string]interface{}
-	params := fmt.Sprintf("order_currency=%s&units=%s&price=%s&type=%s", pair.CurrencyA.Symbol, amount, price, side)
+	params := fmt.Sprintf("order_currency=%s&units=%s&price=%s&type=%s", pair.Base.String(), amount, price, side)
 	log.Println(params)
 	err := bit.doAuthenticatedRequest("/trade/place", params, &retmap)
 	if err != nil {
@@ -82,7 +82,7 @@ func (bit *Bithumb) CancelOrder(orderId string, currency CurrencyPair) (bool, er
 /*补丁*/
 func (bit *Bithumb) CancelOrder2(side, orderId string, currency CurrencyPair) (bool, error) {
 	var retmap map[string]interface{}
-	params := fmt.Sprintf("type=%s&order_id=%s&currency=%s", side, orderId, currency.CurrencyA.Symbol)
+	params := fmt.Sprintf("type=%s&order_id=%s&currency=%s", side, orderId, currency.Base.String())
 	err := bit.doAuthenticatedRequest("/trade/cancel", params, &retmap)
 	if err != nil {
 		return false, err
@@ -100,7 +100,7 @@ func (bit *Bithumb) GetOneOrder(orderId string, currency CurrencyPair) (*Order, 
 /*补丁*/
 func (bit *Bithumb) GetOneOrder2(side, orderId string, currency CurrencyPair) (*Order, error) {
 	var retmap map[string]interface{}
-	params := fmt.Sprintf("type=%s&order_id=%s&currency=%s", side, orderId, currency.CurrencyA.Symbol)
+	params := fmt.Sprintf("type=%s&order_id=%s&currency=%s", side, orderId, currency.Base.String())
 	err := bit.doAuthenticatedRequest("/info/order_detail", params, &retmap)
 	if err != nil {
 		return nil, err
@@ -145,7 +145,7 @@ func (bit *Bithumb) GetOneOrder2(side, orderId string, currency CurrencyPair) (*
 
 func (bit *Bithumb) GetUnfinishOrders(currency CurrencyPair) ([]Order, error) {
 	var retmap map[string]interface{}
-	params := fmt.Sprintf("currency=%s", currency.CurrencyA.Symbol)
+	params := fmt.Sprintf("currency=%s", currency.Base.String())
 	err := bit.doAuthenticatedRequest("/info/orders", params, &retmap)
 	if err != nil {
 		return nil, err
@@ -279,7 +279,7 @@ func (bit *Bithumb) doAuthenticatedRequest(uri, params string, ret interface{}) 
 }
 
 func (bit *Bithumb) GetTicker(currency CurrencyPair) (*Ticker, error) {
-	respmap, err := HttpGet(bit.client, fmt.Sprintf("%s/public/ticker/%s", baseUrl, currency.CurrencyA))
+	respmap, err := HttpGet(bit.client, fmt.Sprintf("%s/public/ticker/%s", baseUrl, currency.Base.String()))
 	if err != nil {
 		return nil, err
 	}
@@ -305,7 +305,7 @@ func (bit *Bithumb) GetTicker(currency CurrencyPair) (*Ticker, error) {
 }
 
 func (bit *Bithumb) GetDepth(size int, currency CurrencyPair) (*Depth, error) {
-	resp, err := HttpGet(bit.client, fmt.Sprintf("%s/public/orderbook/%s", baseUrl, currency.CurrencyA))
+	resp, err := HttpGet(bit.client, fmt.Sprintf("%s/public/orderbook/%s", baseUrl, currency.Base.String()))
 	if err != nil {
 		return nil, err
 	}

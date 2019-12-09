@@ -457,18 +457,18 @@ func (bm *bitmex) GetTrades(contract_type string, currency CurrencyPair, since i
 
 func (bm *bitmex) adaptCurrencyPairToSymbol(pair CurrencyPair, contract string) string {
 	if contract == "" || contract == SWAP_CONTRACT {
-		if pair.CurrencyA.Eq(BTC) {
+		if pair.Base == BTC {
 			pair = NewCurrencyPair(XBT, USD)
 		}
-		if pair.CurrencyB.Eq(BTC) {
-			pair = NewCurrencyPair(pair.CurrencyA, XBT)
+		if pair.Quote == BTC {
+			pair = NewCurrencyPair(pair.Base, XBT)
 		}
 		return pair.AdaptUsdtToUsd().ToSymbol("")
 	}
 
-	coin := pair.CurrencyA.Symbol
-	if pair.CurrencyA.Eq(BTC) {
-		coin = XBT.Symbol
+	coin := pair.Base.String()
+	if pair.Base == BTC {
+		coin = XBT.String()
 	}
 	return fmt.Sprintf("%s%s", coin, strings.ToUpper(contract))
 }

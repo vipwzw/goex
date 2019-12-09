@@ -293,7 +293,7 @@ func (bn *Binance) GetAccount() (*Account, error) {
 	balances := respmap["balances"].([]interface{})
 	for _, v := range balances {
 		vv := v.(map[string]interface{})
-		currency := NewCurrency(vv["asset"].(string), "").AdaptBccToBch()
+		currency := NewCurrency(vv["asset"].(string))
 		acc.SubAccounts[currency] = SubAccount{
 			Currency:     currency,
 			Amount:       ToFloat64(vv["free"]),
@@ -533,12 +533,8 @@ func (bn *Binance) GetOrderHistorys(currency CurrencyPair, currentPage, pageSize
 }
 
 func (ba *Binance) adaptCurrencyPair(pair CurrencyPair) CurrencyPair {
-	if pair.CurrencyA.Eq(BCH) || pair.CurrencyA.Eq(BCC) {
-		return NewCurrencyPair(NewCurrency("BCHABC", ""), pair.CurrencyB).AdaptUsdToUsdt()
-	}
-
-	if pair.CurrencyA.Symbol == "BSV" {
-		return NewCurrencyPair(NewCurrency("BCHSV", ""), pair.CurrencyB).AdaptUsdToUsdt()
+	if pair.Base == BSV {
+		return NewCurrencyPair(NewCurrency("BCHSV"), pair.Quote).AdaptUsdToUsdt()
 	}
 
 	return pair.AdaptUsdToUsdt()

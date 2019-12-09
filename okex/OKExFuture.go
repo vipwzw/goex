@@ -102,7 +102,8 @@ func (ok *OKExFuture) getFutureContractId(pair CurrencyPair, contractAlias strin
 
 	contractId := ""
 	for _, itm := range ok.allContractInfo.contractInfos {
-		if itm.Alias == contractAlias && itm.UnderlyingIndex == pair.CurrencyA.Symbol && itm.QuoteCurrency == pair.CurrencyB.Symbol {
+		if itm.Alias == contractAlias && itm.UnderlyingIndex == pair.Base.String() &&
+			itm.QuoteCurrency == pair.Quote.String() {
 			contractId = itm.InstrumentID
 			break
 		}
@@ -162,19 +163,19 @@ func (ok *OKExFuture) GetFutureAllTicker() (*[]FutureTicker, error) {
 	}
 
 	var tickers []FutureTicker
-	for _,t :=range response{
+	for _, t := range response {
 		date, _ := time.Parse(time.RFC3339, t.Timestamp)
-		tickers=append(tickers, FutureTicker{
-			ContractType:t.InstrumentId,
-			Ticker:&Ticker{
-			Pair: NewCurrencyPair3(t.InstrumentId,"-"),
-			Sell: t.BestAsk,
-			Buy:  t.BestBid,
-			Low:  t.Low24h,
-			High: t.High24h,
-			Last: t.Last,
-			Vol:  t.Volume24h,
-			Date: uint64(date.UnixNano() / int64(time.Millisecond))}})
+		tickers = append(tickers, FutureTicker{
+			ContractType: t.InstrumentId,
+			Ticker: &Ticker{
+				Pair: NewCurrencyPair3(t.InstrumentId, "-"),
+				Sell: t.BestAsk,
+				Buy:  t.BestBid,
+				Low:  t.Low24h,
+				High: t.High24h,
+				Last: t.Last,
+				Vol:  t.Volume24h,
+				Date: uint64(date.UnixNano() / int64(time.Millisecond))}})
 	}
 
 	return &tickers, nil
@@ -253,8 +254,8 @@ func (ok *OKExFuture) GetAccounts(currencyPair ...CurrencyPair) (*FutureAccount,
 	acc := new(FutureAccount)
 	acc.FutureSubAccounts = make(map[Currency]FutureSubAccount, 1)
 	if response.MarginMode == "crossed" {
-		acc.FutureSubAccounts[pair.CurrencyA] = FutureSubAccount{
-			Currency:      pair.CurrencyA,
+		acc.FutureSubAccounts[pair.Base] = FutureSubAccount{
+			Currency:      pair.Base,
 			AccountRights: response.Equity,
 			ProfitReal:    response.RealizedPnl,
 			ProfitUnreal:  response.UnrealizedPnl,
@@ -286,7 +287,7 @@ func (ok *OKExFuture) GetFutureUserinfo() (*FutureAccount, error) {
 	acc.FutureSubAccounts = make(map[Currency]FutureSubAccount, 2)
 	for c, info := range response.Info {
 		if info["margin_mode"] == "crossed" {
-			currency := NewCurrency(c, "")
+			currency := NewCurrency(c)
 			acc.FutureSubAccounts[currency] = FutureSubAccount{
 				Currency:      currency,
 				AccountRights: ToFloat64(info["equity"]),
@@ -304,7 +305,7 @@ func (ok *OKExFuture) GetFutureUserinfo() (*FutureAccount, error) {
 
 func (ok *OKExFuture) normalizePrice(price float64, pair CurrencyPair) string {
 	for _, info := range ok.allContractInfo.contractInfos {
-		if info.UnderlyingIndex == pair.CurrencyA.Symbol && info.QuoteCurrency == pair.CurrencyB.Symbol {
+		if info.UnderlyingIndex == pair.Base.String() && info.QuoteCurrency == pair.Quote.String() {
 			var bit = 0
 			for info.TickSize < 1 {
 				bit++
@@ -574,7 +575,7 @@ func (ok *OKExFuture) GetFee() (float64, error) { panic("") }
 
 func (ok *OKExFuture) GetContractValue(currencyPair CurrencyPair) (float64, error) {
 	for _, info := range ok.allContractInfo.contractInfos {
-		if info.UnderlyingIndex == currencyPair.CurrencyA.Symbol && info.QuoteCurrency == currencyPair.CurrencyB.Symbol {
+		if info.UnderlyingIndex == currencyPair.Base.String() && info.QuoteCurrency == currencyPair.Quote.String() {
 			return ToFloat64(info.ContractVal), nil
 		}
 	}

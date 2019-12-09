@@ -291,7 +291,7 @@ func (ok *OKEx) GetFutureUserinfo() (*FutureAccount, error) {
 	etcMap := resp.Info.Etc
 	xrpMap := resp.Info.Xrp
 	eosMap := resp.Info.Eos
-	btgMap := resp.Info.Btg
+	//btgMap := resp.Info.Btg
 	bsvMap := resp.Info.Bsv
 
 	account.FutureSubAccounts[BTC] = FutureSubAccount{BTC, btcMap["account_rights"], btcMap["keep_deposit"], btcMap["profit_real"], btcMap["profit_unreal"], btcMap["risk_rate"]}
@@ -301,7 +301,7 @@ func (ok *OKEx) GetFutureUserinfo() (*FutureAccount, error) {
 	account.FutureSubAccounts[ETC] = FutureSubAccount{ETC, etcMap["account_rights"], etcMap["keep_deposit"], etcMap["profit_real"], etcMap["profit_unreal"], etcMap["risk_rate"]}
 	account.FutureSubAccounts[XRP] = FutureSubAccount{XRP, xrpMap["account_rights"], xrpMap["keep_deposit"], xrpMap["profit_real"], xrpMap["profit_unreal"], xrpMap["risk_rate"]}
 	account.FutureSubAccounts[EOS] = FutureSubAccount{EOS, eosMap["account_rights"], eosMap["keep_deposit"], eosMap["profit_real"], eosMap["profit_unreal"], eosMap["risk_rate"]}
-	account.FutureSubAccounts[BTG] = FutureSubAccount{BTG, btgMap["account_rights"], btgMap["keep_deposit"], btgMap["profit_real"], btgMap["profit_unreal"], btgMap["risk_rate"]}
+	//account.FutureSubAccounts[BTG] = FutureSubAccount{BTG, btgMap["account_rights"], btgMap["keep_deposit"], btgMap["profit_real"], btgMap["profit_unreal"], btgMap["risk_rate"]}
 	account.FutureSubAccounts[BSV] = FutureSubAccount{BSV, bsvMap["account_rights"], bsvMap["keep_deposit"], bsvMap["profit_real"], bsvMap["profit_unreal"], bsvMap["risk_rate"]}
 
 	return account, nil

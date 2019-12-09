@@ -46,7 +46,7 @@ func (exx *Exx) GetExchangeName() string {
 }
 
 func (exx *Exx) GetTicker(currency CurrencyPair) (*Ticker, error) {
-	symbol := currency.AdaptBchToBcc().AdaptUsdToUsdt().ToLower().ToSymbol("_")
+	symbol := currency.AdaptUsdToUsdt().ToLower().ToSymbol("_")
 	path := MARKET_URL + fmt.Sprintf(TICKER_API, symbol)
 	resp, err := HttpGet(exx.httpClient, path)
 	if err != nil {
@@ -166,7 +166,7 @@ func (exx *Exx) GetAccount() (*Account, error) {
 		subAcc := SubAccount{}
 		subAcc.Amount = ToFloat64(vv["available"])
 		subAcc.ForzenAmount = ToFloat64(vv["freez"])
-		subAcc.Currency = NewCurrency(vv["key"].(string), "").AdaptBchToBcc()
+		subAcc.Currency = NewCurrency(vv["key"].(string))
 		acc.SubAccounts[subAcc.Currency] = subAcc
 	}
 
@@ -177,7 +177,7 @@ func (exx *Exx) GetAccount() (*Account, error) {
 }
 
 func (exx *Exx) placeOrder(amount, price string, currency CurrencyPair, tradeType int) (*Order, error) {
-	symbol := currency.AdaptBchToBcc().AdaptUsdToUsdt().ToSymbol("_")
+	symbol := currency.AdaptUsdToUsdt().ToSymbol("_")
 	params := url.Values{}
 	params.Set("method", "order")
 	params.Set("price", price)
@@ -237,7 +237,7 @@ func (exx *Exx) LimitSell(amount, price string, currency CurrencyPair) (*Order, 
 
 func (exx *Exx) CancelOrder(orderId string, currency CurrencyPair) (bool, error) {
 
-	symbol := currency.AdaptBchToBcc().AdaptUsdToUsdt().ToSymbol("_")
+	symbol := currency.AdaptUsdToUsdt().ToSymbol("_")
 	params := url.Values{}
 	params.Set("method", "cancelOrder")
 	params.Set("id", orderId)
@@ -309,7 +309,7 @@ func parseOrder(order *Order, ordermap map[string]interface{}) {
 }
 
 func (exx *Exx) GetOneOrder(orderId string, currency CurrencyPair) (*Order, error) {
-	symbol := currency.AdaptBchToBcc().AdaptUsdToUsdt().ToSymbol("_")
+	symbol := currency.AdaptUsdToUsdt().ToSymbol("_")
 	params := url.Values{}
 	params.Set("method", "getOrder")
 	params.Set("id", orderId)
@@ -339,7 +339,7 @@ func (exx *Exx) GetOneOrder(orderId string, currency CurrencyPair) (*Order, erro
 
 func (exx *Exx) GetUnfinishOrders(currency CurrencyPair) ([]Order, error) {
 	params := url.Values{}
-	symbol := currency.AdaptBchToBcc().AdaptUsdToUsdt().ToSymbol("_")
+	symbol := currency.AdaptUsdToUsdt().ToSymbol("_")
 	params.Set("method", "getUnfinishedOrdersIgnoreTradeType")
 	params.Set("currency", symbol)
 	params.Set("pageIndex", "1")
@@ -390,7 +390,7 @@ func (exx *Exx) GetKlineRecords(currency CurrencyPair, period, size, since int) 
 func (exx *Exx) Withdraw(amount string, currency Currency, fees, receiveAddr, safePwd string) (string, error) {
 	params := url.Values{}
 	params.Set("method", "withdraw")
-	params.Set("currency", strings.ToLower(currency.AdaptBchToBcc().String()))
+	params.Set("currency", strings.ToLower(currency.String()))
 	params.Set("amount", amount)
 	params.Set("fees", fees)
 	params.Set("receiveAddr", receiveAddr)
@@ -420,7 +420,7 @@ func (exx *Exx) Withdraw(amount string, currency Currency, fees, receiveAddr, sa
 func (exx *Exx) CancelWithdraw(id string, currency Currency, safePwd string) (bool, error) {
 	params := url.Values{}
 	params.Set("method", "cancelWithdraw")
-	params.Set("currency", strings.ToLower(currency.AdaptBchToBcc().String()))
+	params.Set("currency", strings.ToLower(currency.String()))
 	params.Set("downloadId", id)
 	params.Set("safePwd", safePwd)
 	exx.buildPostForm(&params)

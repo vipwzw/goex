@@ -44,7 +44,7 @@ func (ok *OKExSpot) GetAccount() (*Account, error) {
 		SubAccounts: make(map[Currency]SubAccount, 2)}
 
 	for _, itm := range response {
-		currency := NewCurrency(itm.Currency, "")
+		currency := NewCurrency(itm.Currency)
 		account.SubAccounts[currency] = SubAccount{
 			Currency:     currency,
 			ForzenAmount: itm.Hold,

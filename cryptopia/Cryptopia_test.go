@@ -15,7 +15,7 @@ func TestCryptopia_GetTicker(t *testing.T) {
 }
 
 func TestCryptopia_GetDepth(t *testing.T) {
-	depCtp, err := ctp.GetDepth(goex.BTC_USDT)
+	depCtp, err := ctp.GetDepth(1,goex.BTC_USDT)
 	t.Log(err)
 	t.Log("AskList=>", depCtp.AskList)
 	t.Log("BidList=>", depCtp.BidList)

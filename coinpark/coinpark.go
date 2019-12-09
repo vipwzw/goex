@@ -385,7 +385,7 @@ func (c *Cpk) GetAccount() (*Account, error) {
 	for _, v := range assets_list {
 		//log.Println(v)
 		vv := v.(map[string]string)
-		currency := NewCurrency(vv["coin_symbol"], "")
+		currency := NewCurrency(vv["coin_symbol"])
 		acc.SubAccounts[currency] = SubAccount{
 			Currency:     currency,
 			Amount:       ToFloat64(vv["balance"]),

@@ -87,7 +87,7 @@ func (dm *Hbdm) GetFutureUserinfo() (*FutureAccount, error) {
 	acc.FutureSubAccounts = make(map[Currency]FutureSubAccount, 4)
 	for _, sub := range data {
 		subAcc := FutureSubAccount{
-			Currency:      NewCurrency(sub.Symbol, ""),
+			Currency:      NewCurrency(sub.Symbol),
 			AccountRights: sub.MarginBalance,
 			KeepDeposit:   sub.MarginPosition,
 			ProfitReal:    sub.ProfitReal,
@@ -119,7 +119,7 @@ func (dm *Hbdm) GetFuturePosition(currencyPair CurrencyPair, contractType string
 
 	path := "/api/v1/contract_position_info"
 	params := &url.Values{}
-	params.Add("symbol", currencyPair.CurrencyA.Symbol)
+	params.Add("symbol", string(currencyPair.Base))
 
 	err := dm.doRequest(path, params, &data)
 	if err != nil {
@@ -169,7 +169,7 @@ func (dm *Hbdm) PlaceFutureOrder(currencyPair CurrencyPair, contractType, price,
 	path := "/api/v1/contract_order"
 
 	params.Add("contract_type", contractType)
-	params.Add("symbol", currencyPair.CurrencyA.Symbol)
+	params.Add("symbol", currencyPair.Base.String())
 	params.Add("price", price)
 	params.Add("volume", amount)
 	params.Add("lever_rate", fmt.Sprint(leverRate))
@@ -198,7 +198,7 @@ func (dm *Hbdm) FutureCancelOrder(currencyPair CurrencyPair, contractType, order
 	params := &url.Values{}
 
 	params.Add("order_id", orderId)
-	params.Add("symbol", currencyPair.CurrencyA.Symbol)
+	params.Add("symbol", currencyPair.Base.String())
 
 	err := dm.doRequest(path, params, &data)
 	if err != nil {
@@ -222,7 +222,7 @@ func (dm *Hbdm) GetUnfinishFutureOrders(currencyPair CurrencyPair, contractType 
 
 	path := "/api/v1/contract_openorders"
 	params := &url.Values{}
-	params.Add("symbol", currencyPair.CurrencyA.Symbol)
+	params.Add("symbol", currencyPair.Base.String())
 
 	err := dm.doRequest(path, params, &data)
 	if err != nil {
@@ -270,7 +270,7 @@ func (dm *Hbdm) GetFutureOrders(orderIds []string, currencyPair CurrencyPair, co
 	params := &url.Values{}
 
 	params.Add("order_id", strings.Join(orderIds, ","))
-	params.Add("symbol", currencyPair.CurrencyA.Symbol)
+	params.Add("symbol", currencyPair.Base.String())
 
 	err := dm.doRequest(path, params, &data)
 	if err != nil {
@@ -312,7 +312,7 @@ func (dm *Hbdm) GetContractValue(currencyPair CurrencyPair) (float64, error) {
 }
 
 func (dm *Hbdm) GetFutureEstimatedPrice(currencyPair CurrencyPair) (float64, error) {
-	ret, err := HttpGet(dm.config.HttpClient, dm.config.Endpoint+"/api/v1//contract_delivery_price?symbol="+currencyPair.CurrencyA.Symbol)
+	ret, err := HttpGet(dm.config.HttpClient, dm.config.Endpoint+"/api/v1//contract_delivery_price?symbol="+currencyPair.Base.String())
 	if err != nil {
 		return -1, err
 	}
@@ -388,7 +388,7 @@ func (dm *Hbdm) GetFutureDepth(currencyPair CurrencyPair, contractType string, s
 }
 
 func (dm *Hbdm) GetFutureIndex(currencyPair CurrencyPair) (float64, error) {
-	ret, err := HttpGet(dm.config.HttpClient, dm.config.Endpoint+"/api/v1/contract_index?symbol="+currencyPair.CurrencyA.Symbol)
+	ret, err := HttpGet(dm.config.HttpClient, dm.config.Endpoint+"/api/v1/contract_index?symbol="+currencyPair.Base.String())
 	if err != nil {
 		return -1, err
 	}
@@ -463,7 +463,7 @@ func (dm *Hbdm) GetTrades(contract_type string, currencyPair CurrencyPair, since
 }
 
 func (dm *Hbdm) adaptSymbol(pair CurrencyPair, contractType string) string {
-	symbol := pair.CurrencyA.Symbol + "_"
+	symbol := pair.Base.String() + "_"
 	switch contractType {
 	case THIS_WEEK_CONTRACT:
 		symbol += "CW"

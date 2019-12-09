@@ -307,7 +307,6 @@ func (ctx *OKCoinCN_API) GetAccount() (*Account, error) {
 	var cnySubAccount SubAccount
 	var ethSubAccount SubAccount
 	var etcSubAccount SubAccount
-	var bccSubAccount SubAccount
 
 	btcSubAccount.Currency = BTC
 	btcSubAccount.Amount, _ = strconv.ParseFloat(free["btc"].(string), 64)
@@ -329,10 +328,10 @@ func (ctx *OKCoinCN_API) GetAccount() (*Account, error) {
 	etcSubAccount.LoanAmount = 0
 	etcSubAccount.ForzenAmount = ToFloat64(freezed["etc"])
 
-	bccSubAccount.Currency = BCC
-	bccSubAccount.Amount = ToFloat64(free["bcc"])
-	bccSubAccount.LoanAmount = 0
-	bccSubAccount.ForzenAmount = ToFloat64(freezed["bcc"])
+	//bccSubAccount.Currency = BCC
+	//bccSubAccount.Amount = ToFloat64(free["bcc"])
+	//bccSubAccount.LoanAmount = 0
+	//bccSubAccount.ForzenAmount = ToFloat64(freezed["bcc"])
 
 	cnySubAccount.Currency = CNY
 	cnySubAccount.Amount, _ = strconv.ParseFloat(free["cny"].(string), 64)
@@ -345,7 +344,7 @@ func (ctx *OKCoinCN_API) GetAccount() (*Account, error) {
 	account.SubAccounts[CNY] = cnySubAccount
 	account.SubAccounts[ETH] = ethSubAccount
 	account.SubAccounts[ETC] = etcSubAccount
-	account.SubAccounts[BCC] = bccSubAccount
+	//account.SubAccounts[BCC] = bccSubAccount
 
 	return account, nil
 }

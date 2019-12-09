@@ -164,12 +164,12 @@ func (cta *Cryptopia) adaptCurrencyPair(pair CurrencyPair) CurrencyPair {
 	var currencyA Currency
 	var currencyB Currency
 
-	if pair.CurrencyA == BCC {
+	if pair.Base == Currency("BCC") {
 		currencyA = BCH
 	} else {
-		currencyA = pair.CurrencyA
+		currencyA = pair.Base
 	}
-	currencyB = pair.CurrencyB
+	currencyB = pair.Quote
 	//if pair.BaseCurrency == USDT {
 	//	currencyB = USD
 	//} else {

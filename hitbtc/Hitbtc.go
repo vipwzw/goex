@@ -31,9 +31,8 @@ const (
 )
 
 var (
-	YCC     = goex.Currency{"YCC", "Yuan Chain New"}
-	BTC     = goex.Currency{"BTC", "Bitcoin"}
-	YCC_BTC = goex.CurrencyPair{YCC, BTC}
+	YCC     = goex.Currency("YCC")
+	YCC_BTC = goex.CurrencyPair{YCC, goex.BTC}
 )
 
 type Hitbtc struct {
@@ -323,7 +322,7 @@ func (hitbtc *Hitbtc) GetAccount() (*goex.Account, error) {
 
 	for _, v := range ret {
 		vv := v.(map[string]interface{})
-		currency := goex.NewCurrency(vv["currency"].(string), "")
+		currency := goex.NewCurrency(vv["currency"].(string))
 		acc.SubAccounts[currency] = goex.SubAccount{
 			Currency:     currency,
 			Amount:       goex.ToFloat64(vv["available"]),
@@ -587,7 +586,7 @@ func parseStatus(s string) goex.TradeStatus {
 }
 
 func (hitbtc *Hitbtc) adaptCurrencyPair(pair goex.CurrencyPair) goex.CurrencyPair {
-	return pair.AdaptUsdtToUsd().AdaptBccToBch()
+	return pair.AdaptUsdtToUsd()
 }
 
 func (hitbtc *Hitbtc) adaptSymbolToCurrencyPair(pair string) goex.CurrencyPair {
