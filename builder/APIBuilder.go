@@ -238,7 +238,12 @@ func (builder *APIBuilder) Build(exName string) (api API) {
 	case COINEX:
 		_api = coinex.New(builder.client, builder.apiKey, builder.secretkey)
 	case FCOIN:
-		_api = fcoin.NewFCoin(builder.client, builder.apiKey, builder.secretkey)
+		//	_api = fcoin.NewFCoin(builder.client, builder.apiKey, builder.secretkey)
+		_api = fcoin.NewWithConfig(&APIConfig{
+			HttpClient:   builder.client,
+			Endpoint:     builder.endPoint,
+			ApiKey:       builder.apiKey,
+			ApiSecretKey: builder.secretkey})
 	case FCOIN_MARGIN:
 		_api = fcoin.NewFcoinMargin(builder.client, builder.apiKey, builder.secretkey)
 	//case COIN58:
@@ -270,7 +275,7 @@ func (builder *APIBuilder) BuildFuture(exName string) (api FutureRestAPI) {
 			ApiKey:       builder.apiKey,
 			ApiSecretKey: builder.secretkey,
 		})
-	case OKEX_FUTURE:
+	case OKEX_FUTURE, OKEX_V3:
 		//return okcoin.NewOKEx(builder.client, builder.apiKey, builder.secretkey)
 		return okex.NewOKEx(&APIConfig{
 			HttpClient: builder.client,

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	. "github.com/nntaoli-project/GoEx/internal/logger"
 	"net/url"
 	"strings"
 	"time"
@@ -15,8 +16,6 @@ const (
 	baseUrl = "https://www.bitmex.com"
 )
 
-//bitmex register link  https://www.bitmex.com/register/0fcQP7
-
 type bitmex struct {
 	*APIConfig
 }
@@ -26,6 +25,10 @@ func New(config *APIConfig) *bitmex {
 	if bm.Endpoint == "" {
 		bm.Endpoint = baseUrl
 	}
+	if strings.HasSuffix(bm.Endpoint, "/") {
+		bm.Endpoint = bm.Endpoint[0 : len(bm.Endpoint)-1]
+	}
+	Log.Debug("endpoint=", bm.Endpoint)
 	return bm
 }
 
