@@ -176,14 +176,14 @@ func (ws *WsConn) connect() error {
 func (ws *WsConn) reconnect() {
 	ws.c.Close() //主动关闭一次
 	var err error
-	for retry := 1; retry <= 100; retry++ {
+	for retry := 1; retry <= 10000; retry++ {
 		err = ws.connect()
 		if err != nil {
-			Log.Errorf("[ws] [%s] websocket reconnect fail , %s", ws.WsUrl, err.Error())
+			Log.Errorf("[ws] [%s] websocket reconnect fail , %s, %d", ws.WsUrl, err.Error(), retry)
 		} else {
 			break
 		}
-		time.Sleep(ws.WsConfig.reconnectInterval * time.Duration(retry))
+		time.Sleep(ws.WsConfig.reconnectInterval)
 	}
 
 	if err != nil {
@@ -310,10 +310,8 @@ func (ws *WsConn) receiveMessage() {
 			if err != nil {
 				Log.Errorf("[ws][%s] %s", ws.WsUrl, err.Error())
 				if ws.IsAutoReconnect {
-					//	if _, ok := err.(*websocket.CloseError); ok {
 					Log.Infof("[ws][%s] Unexpected Closed , Begin Retry Connect.", ws.WsUrl)
 					ws.reconnect()
-					//	}
 					continue
 				}
 
