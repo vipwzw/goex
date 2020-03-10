@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"log"
 
@@ -11,8 +12,10 @@ import (
 	"github.com/nntaoli-project/goex/huobi"
 )
 
+var dsn = flag.String("dsn", "root:wzw123456@/trade", "mysql data source name")
+
 func main() {
-	db, err := sql.Open("mysql", "root:wzw123456@/trade")
+	db, err := sql.Open("mysql", *dsn)
 	if err != nil {
 		panic(err)
 	}
