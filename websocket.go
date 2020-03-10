@@ -4,13 +4,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/gorilla/websocket"
-	. "github.com/nntaoli-project/goex/internal/logger"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
 	"sync"
 	"time"
+
+	"github.com/gorilla/websocket"
+	. "github.com/nntaoli-project/goex/internal/logger"
 )
 
 type WsConfig struct {
@@ -48,6 +49,7 @@ func NewWsBuilder() *WsBuilder {
 	return &WsBuilder{&WsConfig{
 		ReqHeaders:        make(map[string][]string, 1),
 		reconnectInterval: time.Second * 10,
+		IsAutoReconnect:   true,
 	}}
 }
 
