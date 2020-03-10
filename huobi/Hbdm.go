@@ -47,7 +47,7 @@ type BaseResponse struct {
 }
 
 const (
-	defaultBaseUrl = "https://api.hbdm.com"
+	defaultBaseUrl = "https://api.btcgateway.pro"
 )
 
 func NewHbdm(conf *APIConfig) *Hbdm {

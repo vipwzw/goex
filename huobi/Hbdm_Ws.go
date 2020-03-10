@@ -69,7 +69,7 @@ type HbdmWs struct {
 func NewHbdmWs() *HbdmWs {
 	hbdmWs := &HbdmWs{WsBuilder: NewWsBuilder()}
 	hbdmWs.WsBuilder = hbdmWs.WsBuilder.
-		WsUrl("wss://api.hbdm.com/ws").
+		WsUrl("wss://api.btcgateway.pro/ws").
 		AutoReconnect().
 		//Heartbeat([]byte("{\"event\": \"ping\"} "), 30*time.Second).
 		//Heartbeat(func() []byte { return []byte("{\"op\":\"ping\"}") }(), 5*time.Second).
