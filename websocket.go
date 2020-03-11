@@ -174,7 +174,6 @@ func (ws *WsConn) connect() error {
 }
 
 func (ws *WsConn) reconnect() {
-retry:
 	ws.c.Close() //主动关闭一次
 	var err error
 	for retry := 1; retry <= 1000000; retry++ {
@@ -205,7 +204,9 @@ retry:
 		err := ws.Subscribe(sub)
 		if err != nil {
 			ws.subs = tmp
-			goto retry
+			Log.Info("try resub failed...", sub)
+			ws.reconnect()
+			break
 		}
 	}
 }
@@ -291,16 +292,13 @@ func (ws *WsConn) setWsHandle() {
 	//exit
 	ws.c.SetCloseHandler(func(code int, text string) error {
 		Log.Infof("[ws][%s] websocket exiting [code=%d , text=%s]", ws.WsUrl, code, text)
-		ws.CloseWs()
 		return nil
 	})
-
 	ws.c.SetPongHandler(func(pong string) error {
 		Log.Debugf("[%s] received [pong] %s", ws.WsUrl, pong)
 		ws.c.SetReadDeadline(time.Now().Add(ws.readDeadLineTime))
 		return nil
 	})
-
 	ws.c.SetPingHandler(func(ping string) error {
 		Log.Debugf("[%s] received [ping] %s", ws.WsUrl, ping)
 		ws.c.SetReadDeadline(time.Now().Add(ws.readDeadLineTime))
