@@ -12,6 +12,7 @@ import (
 
 	"github.com/gorilla/websocket"
 	. "github.com/nntaoli-project/goex/internal/logger"
+	"github.com/prometheus/common/log"
 )
 
 type WsConfig struct {
@@ -159,7 +160,7 @@ func (ws *WsConn) connect() error {
 	}
 
 	ws.c = wsConn
-
+	ws.setWsHandle()
 	if ws.HeartbeatIntervalTime > 0 {
 		wsConn.SetReadDeadline(time.Now().Add(ws.readDeadLineTime))
 	}
@@ -176,14 +177,14 @@ func (ws *WsConn) connect() error {
 func (ws *WsConn) reconnect() {
 	ws.c.Close() //主动关闭一次
 	var err error
-	for retry := 1; retry <= 10000; retry++ {
+	for retry := 1; retry <= 1000000; retry++ {
 		err = ws.connect()
 		if err != nil {
 			Log.Errorf("[ws] [%s] websocket reconnect fail , %s, %d", ws.WsUrl, err.Error(), retry)
-		} else {
-			break
+			time.Sleep(ws.WsConfig.reconnectInterval)
+			continue
 		}
-		time.Sleep(ws.WsConfig.reconnectInterval)
+		break
 	}
 
 	if err != nil {
@@ -192,14 +193,14 @@ func (ws *WsConn) reconnect() {
 		if ws.ErrorHandleFunc != nil {
 			ws.ErrorHandleFunc(errors.New("retry reconnect fail"))
 		}
-	} else {
-		//re subscribe
-		var tmp []interface{}
-		copy(tmp, ws.subs)
-		ws.subs = ws.subs[:0]
-		for _, sub := range tmp {
-			ws.Subscribe(sub)
-		}
+		return
+	}
+	//re subscribe
+	var tmp []interface{}
+	copy(tmp, ws.subs)
+	ws.subs = ws.subs[:0]
+	for _, sub := range tmp {
+		ws.Subscribe(sub)
 	}
 }
 
@@ -230,7 +231,7 @@ func (ws *WsConn) writeRequest() {
 			err = ws.c.WriteMessage(websocket.CloseMessage, d)
 		case <-heartTimer.C:
 			if ws.HeartbeatIntervalTime > 0 {
-				//Log.Debug("send heartbeat data")
+				Log.Debug("send heartbeat data")
 				err = ws.c.WriteMessage(websocket.TextMessage, ws.HeartbeatData())
 				heartTimer.Reset(ws.HeartbeatIntervalTime)
 			}
@@ -249,6 +250,7 @@ func (ws *WsConn) Subscribe(subEvent interface{}) error {
 		Log.Errorf("[ws][%s] json encode error , %s", ws.WsUrl, err)
 		return err
 	}
+	log.Infof("[ws][sub] %s", string(data))
 	ws.writeBufferChan <- data
 	ws.subs = append(ws.subs, subEvent)
 	return nil
@@ -279,7 +281,7 @@ func (ws *WsConn) SendJsonMessage(m interface{}) error {
 	return nil
 }
 
-func (ws *WsConn) receiveMessage() {
+func (ws *WsConn) setWsHandle() {
 	//exit
 	ws.c.SetCloseHandler(func(code int, text string) error {
 		Log.Infof("[ws][%s] websocket exiting [code=%d , text=%s]", ws.WsUrl, code, text)
@@ -298,7 +300,9 @@ func (ws *WsConn) receiveMessage() {
 		ws.c.SetReadDeadline(time.Now().Add(ws.readDeadLineTime))
 		return nil
 	})
+}
 
+func (ws *WsConn) receiveMessage() {
 	for {
 		select {
 		case <-ws.close:
@@ -306,7 +310,7 @@ func (ws *WsConn) receiveMessage() {
 			return
 		default:
 			t, msg, err := ws.c.ReadMessage()
-
+			Log.Info("[ws][read.a.msg]")
 			if err != nil {
 				Log.Errorf("[ws][%s] %s", ws.WsUrl, err.Error())
 				if ws.IsAutoReconnect {
@@ -314,11 +318,9 @@ func (ws *WsConn) receiveMessage() {
 					ws.reconnect()
 					continue
 				}
-
 				if ws.ErrorHandleFunc != nil {
 					ws.ErrorHandleFunc(err)
 				}
-
 				return
 			}
 
@@ -330,14 +332,13 @@ func (ws *WsConn) receiveMessage() {
 			case websocket.BinaryMessage:
 				if ws.UnCompressFunc == nil {
 					ws.ProtoHandleFunc(msg)
-				} else {
-					msg2, err := ws.UnCompressFunc(msg)
-					if err != nil {
-						Log.Errorf("[ws][%s] uncompress error %s", ws.WsUrl, err.Error())
-					} else {
-						ws.ProtoHandleFunc(msg2)
-					}
 				}
+				msg2, err := ws.UnCompressFunc(msg)
+				if err != nil {
+					Log.Errorf("[ws][%s] uncompress error %s", ws.WsUrl, err.Error())
+					break
+				}
+				ws.ProtoHandleFunc(msg2)
 			case websocket.CloseMessage:
 				ws.CloseWs()
 				return
