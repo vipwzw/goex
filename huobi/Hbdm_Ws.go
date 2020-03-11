@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	. "github.com/nntaoli-project/goex"
 	"log"
 	"sort"
 	"strings"
 	"sync"
 	"time"
+
+	. "github.com/nntaoli-project/goex"
 )
 
 type WsResponse struct {
@@ -71,8 +72,7 @@ func NewHbdmWs() *HbdmWs {
 	hbdmWs.WsBuilder = hbdmWs.WsBuilder.
 		WsUrl("wss://api.btcgateway.pro/ws").
 		AutoReconnect().
-		//Heartbeat([]byte("{\"event\": \"ping\"} "), 30*time.Second).
-		//Heartbeat(func() []byte { return []byte("{\"op\":\"ping\"}") }(), 5*time.Second).
+		Heartbeat(func() []byte { return []byte("{\"op\":\"ping\"}") }, 5*time.Second).
 		UnCompressFunc(GzipUnCompress).
 		ProtoHandleFunc(hbdmWs.handle)
 	return hbdmWs
@@ -114,7 +114,7 @@ func (hbdmWs *HbdmWs) SubscribeTrade(pair CurrencyPair, contract string) error {
 }
 
 func (hbdmWs *HbdmWs) subscribe(sub map[string]interface{}) error {
-//	log.Println(sub)
+	//	log.Println(sub)
 	hbdmWs.connectWs()
 	return hbdmWs.wsConn.Subscribe(sub)
 }
