@@ -72,6 +72,7 @@ func NewHbdmWs() *HbdmWs {
 	hbdmWs.WsBuilder = hbdmWs.WsBuilder.
 		WsUrl("wss://api.btcgateway.pro/ws").
 		AutoReconnect().
+		Dump().
 		Heartbeat(func() []byte { return []byte("{\"op\":\"ping\"}") }, 5*time.Second).
 		UnCompressFunc(GzipUnCompress).
 		ProtoHandleFunc(hbdmWs.handle)
