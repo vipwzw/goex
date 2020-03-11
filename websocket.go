@@ -12,7 +12,6 @@ import (
 
 	"github.com/gorilla/websocket"
 	. "github.com/nntaoli-project/goex/internal/logger"
-	"github.com/prometheus/common/log"
 )
 
 type WsConfig struct {
@@ -250,7 +249,7 @@ func (ws *WsConn) Subscribe(subEvent interface{}) error {
 		Log.Errorf("[ws][%s] json encode error , %s", ws.WsUrl, err)
 		return err
 	}
-	log.Infof("[ws][sub] %s", string(data))
+	Log.Infof("[ws][sub] %s", string(data))
 	ws.writeBufferChan <- data
 	ws.subs = append(ws.subs, subEvent)
 	return nil
