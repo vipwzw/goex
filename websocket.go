@@ -174,6 +174,7 @@ func (ws *WsConn) connect() error {
 }
 
 func (ws *WsConn) reconnect() {
+retry:
 	ws.c.Close() //主动关闭一次
 	var err error
 	for retry := 1; retry <= 1000000; retry++ {
@@ -194,12 +195,18 @@ func (ws *WsConn) reconnect() {
 		}
 		return
 	}
+	Log.Info("try resubs...", ws.subs)
 	//re subscribe
-	var tmp []interface{}
+	tmp := make([]interface{}, len(ws.subs))
 	copy(tmp, ws.subs)
 	ws.subs = ws.subs[:0]
 	for _, sub := range tmp {
-		ws.Subscribe(sub)
+		Log.Info("try resub...", sub)
+		err := ws.Subscribe(sub)
+		if err != nil {
+			ws.subs = tmp
+			goto retry
+		}
 	}
 }
 
