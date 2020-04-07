@@ -1,3 +1,6 @@
 .idea
 example/huobi
 example/huobi.log
+example/accesskey.go
+example/chain33/
+example/vue-tradingview/
