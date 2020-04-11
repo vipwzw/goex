@@ -4,14 +4,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	. "github.com/nntaoli-project/goex"
-	. "github.com/nntaoli-project/goex/internal/logger"
 	"math/big"
 	"net/http"
 	"net/url"
 	"sort"
 	"strings"
 	"time"
+
+	. "github.com/nntaoli-project/goex"
+	. "github.com/nntaoli-project/goex/internal/logger"
 )
 
 var HBPOINT = NewCurrency("HBPOINT", "")

@@ -4,11 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	. "github.com/nntaoli-project/goex"
 	"net/url"
 	"sort"
 	"strings"
 	"time"
+
+	. "github.com/nntaoli-project/goex"
 )
 
 type Hbdm struct {
@@ -63,6 +64,9 @@ func (dm *Hbdm) GetExchangeName() string {
 
 func (dm *Hbdm) GetFutureUserinfo() (*FutureAccount, error) {
 	path := "/api/v1/contract_account_info"
+	if dm.config.HuobiSwap {
+		path = "/swap-api/v1/swap_account_info"
+	}
 	var data []struct {
 		Symbol            string  `json:"symbol"`
 		MarginBalance     float64 `json:"margin_balance"`
@@ -118,6 +122,9 @@ func (dm *Hbdm) GetFuturePosition(currencyPair CurrencyPair, contractType string
 	}
 
 	path := "/api/v1/contract_position_info"
+	if dm.config.HuobiSwap {
+		path = "/swap-api/v1/swap_position_info"
+	}
 	params := &url.Values{}
 	params.Add("symbol", currencyPair.CurrencyA.Symbol)
 
@@ -167,7 +174,9 @@ func (dm *Hbdm) PlaceFutureOrder(currencyPair CurrencyPair, contractType, price,
 
 	params := &url.Values{}
 	path := "/api/v1/contract_order"
-
+	if dm.config.HuobiSwap {
+		path = "/swap-api/v1/swap_order"
+	}
 	params.Add("contract_type", contractType)
 	params.Add("symbol", currencyPair.CurrencyA.Symbol)
 	params.Add("volume", amount)
@@ -175,8 +184,8 @@ func (dm *Hbdm) PlaceFutureOrder(currencyPair CurrencyPair, contractType, price,
 	params.Add("contract_code", "")
 
 	if matchPrice == 1 {
-		params.Set("order_price_type" , "opponent") //对手价下单
-	}else{
+		params.Set("order_price_type", "opponent") //对手价下单
+	} else {
 		params.Set("order_price_type", "limit")
 		params.Add("price", price)
 	}
@@ -200,6 +209,9 @@ func (dm *Hbdm) FutureCancelOrder(currencyPair CurrencyPair, contractType, order
 		} `json:"errors"`
 	}
 	path := "/api/v1/contract_cancel"
+	if dm.config.HuobiSwap {
+		path = "/swap-api/v1/swap_cancel"
+	}
 	params := &url.Values{}
 
 	params.Add("order_id", orderId)
@@ -226,6 +238,9 @@ func (dm *Hbdm) GetUnfinishFutureOrders(currencyPair CurrencyPair, contractType 
 	}
 
 	path := "/api/v1/contract_openorders"
+	if dm.config.HuobiSwap {
+		path = "/swap-api/v1/swap_openorders"
+	}
 	params := &url.Values{}
 	params.Add("symbol", currencyPair.CurrencyA.Symbol)
 
@@ -272,6 +287,9 @@ func (dm *Hbdm) GetFutureOrder(orderId string, currencyPair CurrencyPair, contra
 func (dm *Hbdm) GetFutureOrders(orderIds []string, currencyPair CurrencyPair, contractType string) ([]FutureOrder, error) {
 	var data []OrderInfo
 	path := "/api/v1/contract_order_info"
+	if dm.config.HuobiSwap {
+		path = "/swap-api/v1/swap_order_info"
+	}
 	params := &url.Values{}
 
 	params.Add("order_id", strings.Join(orderIds, ","))

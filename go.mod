@@ -11,6 +11,7 @@ require (
 	github.com/NebulousLabs/fastrand v0.0.0-20181203155948-6fb6489aac4e // indirect
 	github.com/NebulousLabs/merkletree v0.0.0-20181203152040-08d5d54b07f5 // indirect
 	github.com/XiaoMi/pegasus-go-client v0.0.0-20200107115008-a8922462d2f9 // indirect
+	github.com/cweill/gotests v1.5.3 // indirect
 	github.com/deckarep/golang-set v1.7.1
 	github.com/decred/base58 v1.0.2 // indirect
 	github.com/go-openapi/errors v0.19.2

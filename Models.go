@@ -116,8 +116,8 @@ type APIConfig struct {
 	ApiSecretKey  string
 	ApiPassphrase string //for okex.com v3 api
 	ClientId      string //for bitstamp.net , huobi.pro
-
-	Lever int //杠杆倍数 , for future
+	Lever         int    //杠杆倍数 , for future
+	HuobiSwap     bool   //huobi 永续合约
 }
 
 type Kline struct {

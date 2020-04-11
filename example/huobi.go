@@ -13,13 +13,23 @@ import (
 )
 
 var dsn = flag.String("dsn", "root:wzw123456@/trade", "mysql data source name")
+var swap = flag.Bool("swap", false, "is swap")
+var trade = flag.Bool("trade", false, "is process trade")
 
 func main() {
+	flag.Parse()
+	if *trade {
+		processTrade()
+		return
+	}
 	db, err := sql.Open("mysql", *dsn)
 	if err != nil {
 		panic(err)
 	}
 	ws := huobi.NewHbdmWs() //huobi期货
+	if *swap {
+		ws = huobi.NewHbdmSwapWs()
+	}
 	//设置回调函数
 	ws.SetCallbacks(func(ticker *goex.FutureTicker) {
 		//printJSON(ticker)
@@ -32,7 +42,11 @@ func main() {
 		}
 	})
 	//订阅行情
-	ws.SubscribeTrade(goex.BTC_USDT, goex.QUARTER_CONTRACT)
+	if *swap {
+		ws.SubscribeTrade(goex.BTC_USDT, goex.SWAP_CONTRACT)
+	} else {
+		ws.SubscribeTrade(goex.BTC_USDT, goex.QUARTER_CONTRACT)
+	}
 	//ws.SubscribeDepth(goex.BTC_USDT, goex.QUARTER_CONTRACT, 5)
 	//ws.SubscribeTicker(goex.BTC_USDT, goex.QUARTER_CONTRACT)
 	select {}
@@ -57,4 +71,8 @@ func tryInsert(db *sql.DB, q string) {
 	if err != nil {
 		log.Println("exec failed:", err, ", sql:", q)
 	}
+}
+
+func processTrade() {
+
 }

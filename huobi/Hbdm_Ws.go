@@ -79,6 +79,19 @@ func NewHbdmWs() *HbdmWs {
 	return hbdmWs
 }
 
+//NewHbdmSwapWs 永续合约
+func NewHbdmSwapWs() *HbdmWs {
+	hbdmWs := &HbdmWs{WsBuilder: NewWsBuilder()}
+	hbdmWs.WsBuilder = hbdmWs.WsBuilder.
+		WsUrl("wss://api.btcgateway.pro/swap-ws").
+		AutoReconnect().
+		Dump().
+		Heartbeat(func() []byte { return []byte("{\"op\":\"ping\"}") }, 5*time.Second).
+		UnCompressFunc(GzipUnCompress).
+		ProtoHandleFunc(hbdmWs.handle)
+	return hbdmWs
+}
+
 func (hbdmWs *HbdmWs) SetCallbacks(tickerCallback func(*FutureTicker),
 	depthCallback func(*Depth),
 	tradeCallback func(*Trade, string)) {
@@ -93,7 +106,15 @@ func (hbdmWs *HbdmWs) SubscribeTicker(pair CurrencyPair, contract string) error 
 	}
 	return hbdmWs.subscribe(map[string]interface{}{
 		"id":  "ticker_1",
-		"sub": fmt.Sprintf("market.%s_%s.detail", pair.CurrencyA.Symbol, hbdmWs.adaptContractSymbol(contract))})
+		"sub": fmt.Sprintf("market.%s.detail", hbdmWs.getContractCode(pair.CurrencyA.Symbol, contract))})
+}
+
+func (hbdmWs *HbdmWs) getContractCode(symbol, contract string) string {
+	sep := "_"
+	if contract == SWAP_CONTRACT {
+		sep = "-"
+	}
+	return fmt.Sprintf("%s%s%s", symbol, sep, hbdmWs.adaptContractSymbol(contract))
 }
 
 func (hbdmWs *HbdmWs) SubscribeDepth(pair CurrencyPair, contract string, size int) error {
@@ -102,7 +123,7 @@ func (hbdmWs *HbdmWs) SubscribeDepth(pair CurrencyPair, contract string, size in
 	}
 	return hbdmWs.subscribe(map[string]interface{}{
 		"id":  "depth_2",
-		"sub": fmt.Sprintf("market.%s_%s.depth.step0", pair.CurrencyA.Symbol, hbdmWs.adaptContractSymbol(contract))})
+		"sub": fmt.Sprintf("market.%s.depth.step0", hbdmWs.getContractCode(pair.CurrencyA.Symbol, contract))})
 }
 
 func (hbdmWs *HbdmWs) SubscribeTrade(pair CurrencyPair, contract string) error {
@@ -111,7 +132,7 @@ func (hbdmWs *HbdmWs) SubscribeTrade(pair CurrencyPair, contract string) error {
 	}
 	return hbdmWs.subscribe(map[string]interface{}{
 		"id":  "trade_3",
-		"sub": fmt.Sprintf("market.%s_%s.trade.detail", pair.CurrencyA.Symbol, hbdmWs.adaptContractSymbol(contract))})
+		"sub": fmt.Sprintf("market.%s.trade.detail", hbdmWs.getContractCode(pair.CurrencyA.Symbol, contract))})
 }
 
 func (hbdmWs *HbdmWs) subscribe(sub map[string]interface{}) error {
@@ -229,6 +250,9 @@ func (hbdmWs *HbdmWs) parseCurrencyAndContract(ch string) (CurrencyPair, string,
 		return UNKNOWN_PAIR, "", errors.New(ch)
 	}
 	cs := strings.Split(el[1], "_")
+	if len(cs) == 1 {
+		cs = strings.Split(el[1], "-")
+	}
 	contract := ""
 	switch cs[1] {
 	case "CQ":
@@ -237,6 +261,8 @@ func (hbdmWs *HbdmWs) parseCurrencyAndContract(ch string) (CurrencyPair, string,
 		contract = NEXT_WEEK_CONTRACT
 	case "CW":
 		contract = THIS_WEEK_CONTRACT
+	case "USD":
+		contract = SWAP_CONTRACT
 	}
 	return NewCurrencyPair(NewCurrency(cs[0], ""), USD), contract, nil
 }
@@ -263,6 +289,8 @@ func (hbdmWs *HbdmWs) adaptContractSymbol(contract string) string {
 		return "NW"
 	case THIS_WEEK_CONTRACT:
 		return "CW"
+	case SWAP_CONTRACT:
+		return "USD"
 	}
 	return ""
 }
